@@ -9,6 +9,7 @@ class Config(object):
 
     Contains the sqlalchemy_database_uri(self) method
     """
+    JWT_SECRET_KEY =  environ.get("JWT_KEY")
     @property
     def SQLALCHEMY_DATABASE_URI(self):
         """

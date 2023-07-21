@@ -4,9 +4,10 @@ Main App
 Contains the create_app( ) function
 """
 from flask import Flask
-from init import db, ma
+from init import db, ma, bcrypt, jwt
 from config import app_config
 from blueprints.cli_bp import cli_bp
+from blueprints.quote_bp import quote_bp
 
 def create_app():
     """
@@ -19,8 +20,12 @@ def create_app():
     # initalise the instances from the init.py file
     db.init_app(app)
     ma.init_app(app)
+    bcrypt.init_app(app)
+    jwt.init_app(app)
+
 
     # register blueprints
     app.register_blueprint(cli_bp)
+    app.register_blueprint(quote_bp)
 
     return app
