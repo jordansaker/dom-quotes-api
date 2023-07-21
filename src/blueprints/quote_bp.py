@@ -5,9 +5,9 @@ from random import randint
 from datetime import timedelta
 from flask import Blueprint, request
 from sqlalchemy import desc
-from models.quote import Quote, QuoteSchema
 from flask_jwt_extended import jwt_required, create_access_token
 from models.user import User, AdminSchema, AdminLoginSchema
+from models.quote import Quote, QuoteSchema
 from init import db, bcrypt
 
 quote_bp = Blueprint('quote', __name__)
@@ -96,3 +96,48 @@ def add_quote():
         "msg": "Quote added to dom_quotes table",
         "quote": QuoteSchema().dump(new_quote)
     }, 201
+
+
+@quote_bp.route('/<int:quote_id>', methods=['DELETE'])
+@jwt_required()
+def delete_quote(quote_id):
+    """
+    ADMIN ONLY
+
+    Delete quote from the database
+    """
+    # find the quote using the quote id
+    stmt = db.select(Quote).filter_by(id=quote_id)
+    quote = db.session.scalar(stmt)
+    if quote:
+        # delete the quote
+        db.session.delete(quote)
+        db.session.commit()
+        return {
+            "msg": "Quote deleted"
+        }, 200
+    return {"not_found": "quote not found"}, 404
+
+
+@quote_bp.route('/<int:quote_id>', methods=['PUT', 'PATCH'])
+@jwt_required()
+def update_quote(quote_id):
+    """
+    ADMIN ONLY
+
+    Update the existing quote in the database
+    """
+    # find the quote using the quote_id
+    stmt = db.select(Quote).filter_by(id=quote_id)
+    existing_quote = db.session.scalar(stmt)
+    if existing_quote:
+        # sanitise the request body
+        request_body = AdminSchema().load(request.json)
+
+        existing_quote.quote = request_body.get('quote', existing_quote.quote)
+        existing_quote.movie_title = request_body.get('movie_title', existing_quote.movie_title)
+
+        # commit the update
+        db.session.commit()
+        return QuoteSchema().dump(existing_quote)
+    return {"not_found": "quote not found"}, 404
