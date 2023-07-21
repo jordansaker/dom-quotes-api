@@ -5,6 +5,7 @@ Contains the create_app( ) function
 """
 from os import environ
 from flask import Flask
+from flask_cors import CORS
 from init import db, ma, bcrypt, jwt
 from blueprints.cli_bp import cli_bp
 from blueprints.quote_bp import quote_bp
@@ -15,6 +16,8 @@ def create_app():
     Function to create the Flask app
     """
     app = Flask(__name__)
+    # allow CORS
+    CORS(app)
     # configure the app using the object from config.py
     if config.Config.ENVIRONMENT == 'prod':
         app.config.from_object('config.ProdConfig')
