@@ -6,6 +6,7 @@ Contains the create_app( ) function
 from flask import Flask
 from init import db, ma
 from config import app_config
+from blueprints.cli_bp import cli_bp
 
 def create_app():
     """
@@ -19,5 +20,7 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
 
+    # register blueprints
+    app.register_blueprint(cli_bp)
 
     return app
