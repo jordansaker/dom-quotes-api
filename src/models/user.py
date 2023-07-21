@@ -19,16 +19,32 @@ class User(db.Model):
     password = db.Column(db.String(), nullable=False, unique=True)
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
 
-class UserSchema(ma.Schema):
+
+class AdminSchema(ma.Schema):
     """
-    Creates a model instance of the database instance
+    Schema used to load the body request of an admin operation
 
     Attributes:
 
-        email (str)
+        email (str), password (str), quote (text), movie_title (str)
     """
     class Meta:
         """
         Defining the fields in a tuple and ordering the fields
         """
-        fields = ('email')
+        fields = ('quote', 'movie_title')
+
+
+class AdminLoginSchema(ma.Schema):
+    """
+    Schema used to load the body request of an admin login
+
+    Attributes:
+
+        email (str), password (str)
+    """
+    class Meta:
+        """
+        Defining the fields in a tuple and ordering the fields
+        """
+        fields = ('email', 'password')

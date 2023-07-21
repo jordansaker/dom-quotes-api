@@ -15,7 +15,8 @@ Commands:
 """
 from flask import Blueprint
 from models.quote import Quote
-from init import db
+from models.user import User
+from init import db, bcrypt
 
 cli_bp = Blueprint('cli', __name__)
 
@@ -65,7 +66,12 @@ def seed_tables():
             movie_title= "Fast And The Furious"
         )
     ]
+    user = User(
+        email= 'adminDom@family.com',
+        password= bcrypt.generate_password_hash('WeAreFamilyDomTorretto').decode('utf8')
+    )
     # add and commit the list
     db.session.add_all(quotes)
+    db.session.add(user)
     db.session.commit()
     print('Tables seeded')
