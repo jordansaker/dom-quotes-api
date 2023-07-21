@@ -3,11 +3,12 @@ Main App
 
 Contains the create_app( ) function
 """
+from os import environ
 from flask import Flask
 from init import db, ma, bcrypt, jwt
-from config import app_config
 from blueprints.cli_bp import cli_bp
 from blueprints.quote_bp import quote_bp
+import config
 
 def create_app():
     """
@@ -15,7 +16,11 @@ def create_app():
     """
     app = Flask(__name__)
     # configure the app using the object from config.py
-    app.config.from_object(app_config)
+    if config.Config.ENVIRONMENT == 'prod':
+        app.config.from_object('config.ProdConfig')
+    else:
+        app.config.from_object('config.DevConfig')
+        environ['FLASK_DEBUG'] = config.DevConfig.FLASK_DEBUG
     app.json.sort_keys = False
     # initalise the instances from the init.py file
     db.init_app(app)

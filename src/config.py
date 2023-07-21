@@ -2,52 +2,30 @@
 App config file containing the config object
 """
 from os import environ
+from dotenv import load_dotenv
+load_dotenv()
 
 class Config(object):
     """
     Config file object class
-
-    Contains the sqlalchemy_database_uri(self) method
     """
     JWT_SECRET_KEY =  environ.get("JWT_KEY")
+    ENVIRONMENT = environ.get("ENVIRONMENT")
+    FLASK_APP = environ.get("FLASK_APP")
+    FLASK_ENV = environ.get("FLASK_ENV")
 
-    @property
-    def SQLALCHEMY_DATABASE_URI(self):
-        """
-        Method to access the .env and get the value of DB_URI
-        """
-        value = environ.get("DB_URI")
-        if not value:
-            raise ValueError("DB_URI is not set in .env")
-        return value
-
-    @SQLALCHEMY_DATABASE_URI.setter
-    def SQLALCHEMY_DATABASE_URI(self, url):
-        """
-        Method to set the DB_URL
-        """
-        self._SQLALCHEMY_DATABASE_URI = url
-
-
-class DevelopmentConfig(Config):
+class DevConfig(Config):
     """
-    Development Config sets DEBUG to True
+    Config file object class for Dev
     """
-    FLASK_DEBUG = "1"
+    SQLALCHEMY_DATABASE_URI = environ.get('DB_URI_DEV')
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    FLASK_DEBUG = '1'
 
-class ProductionConfig(Config):
+class ProdConfig(Config):
     """
-    Pro Config sets DEBUG to False
+    Config file object class for Prod
     """
-    FLASK_DEBUG = "0"
-
-# check the env for the envrionment setting
-environment = environ.get("FLASK_ENV")
-
-match(environment):
-    case 'development':
-        app_config = DevelopmentConfig()
-    case 'production':
-        app_config = ProductionConfig()
-# set the debug mode if applicable
-environ['FLASK_DEBUG'] = app_config.FLASK_DEBUG
+    SQLALCHEMY_DATABASE_URI = environ.get('DB_URI')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    FLASK_DEBUG = '0'
