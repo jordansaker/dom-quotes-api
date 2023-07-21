@@ -40,7 +40,6 @@ class ProductionConfig(Config):
     Pro Config sets DEBUG to False
     """
     FLASK_DEBUG = "0"
-    PROD_URL = environ.get("DB_URI_PROD")
 
 # check the env for the envrionment setting
 environment = environ.get("FLASK_ENV")
@@ -50,6 +49,5 @@ match(environment):
         app_config = DevelopmentConfig()
     case 'production':
         app_config = ProductionConfig()
-        app_config.SQLALCHEMY_DATABASE_URI = app_config.PROD_URL
 # set the debug mode if applicable
 environ['FLASK_DEBUG'] = app_config.FLASK_DEBUG
