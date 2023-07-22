@@ -24,12 +24,9 @@ def get_quote():
     quotes = db.session.scalars(stmt).all()
 
     # grab the first object in the list and access the id key
-    max_range = quotes[0].id
+    max_range = len(quotes) - 1
     # get a random number to use as the query condition
-    random_quote_id = randint(1, max_range)
-    # retrieve the quote from the database
-    stmt = db.select(Quote).filter_by(id=random_quote_id)
-    random_quote = db.session.scalar(stmt)
+    random_quote = quotes[randint(1, max_range)]
     return QuoteSchema().dump(random_quote)
 
 #ADMIN ONLY OPERATIONS
