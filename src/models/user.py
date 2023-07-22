@@ -3,6 +3,7 @@ Model for the admin to access the database and perform full CRUD
 range
 """
 from marshmallow import fields
+from marshmallow.validate import Length
 from init import db, ma
 
 class User(db.Model):
@@ -29,8 +30,8 @@ class AdminSchema(ma.Schema):
 
         email (str), password (str), quote (text), movie_title (str)
     """
-    quote = fields.String(required=True)
-    movie_title = fields.String(required=True)
+    quote = fields.String(validate=Length(3), required=True)
+    movie_title = fields.String(validate=Length(3), required=True)
     class Meta:
         """
         Defining the fields in a tuple and ordering the fields
