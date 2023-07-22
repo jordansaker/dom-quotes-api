@@ -2,6 +2,7 @@
 Model for the admin to access the database and perform full CRUD
 range
 """
+from marshmallow import fields
 from init import db, ma
 
 class User(db.Model):
@@ -28,6 +29,8 @@ class AdminSchema(ma.Schema):
 
         email (str), password (str), quote (text), movie_title (str)
     """
+    quote = fields.String(required=True)
+    movie_title = fields.String(required=True)
     class Meta:
         """
         Defining the fields in a tuple and ordering the fields
@@ -43,6 +46,8 @@ class AdminLoginSchema(ma.Schema):
 
         email (str), password (str)
     """
+    email = fields.Email(required=True)
+    password = fields.String(required=True)
     class Meta:
         """
         Defining the fields in a tuple and ordering the fields

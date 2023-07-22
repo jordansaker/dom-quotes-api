@@ -6,6 +6,9 @@ Contains the create_app( ) function
 from os import environ
 from flask import Flask
 from flask_cors import CORS
+from marshmallow.exceptions import ValidationError
+from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import UnsupportedMediaType
 from init import db, ma, bcrypt, jwt
 from blueprints.cli_bp import cli_bp
 from blueprints.quote_bp import quote_bp
@@ -35,5 +38,22 @@ def create_app():
     # register blueprints
     app.register_blueprint(cli_bp)
     app.register_blueprint(quote_bp)
+
+    # handle errors
+    @app.errorhandler(ValidationError)
+    def validation_error(err):
+        return {'validation_error': err.messages}, 400
+
+    @app.errorhandler(400)
+    def bad_request(err):
+        return {'bad_request': 'No JSON object found in request body'}, 400
+
+    @app.errorhandler(IntegrityError)
+    def integrity_error(err):
+        return {'integrity_error': 'Data already exists in database'}, 400
+
+    @app.errorhandler(UnsupportedMediaType)
+    def unsupported_request(err):
+        return {'bad_request': 'No JSON object found in request body'}, 400
 
     return app
