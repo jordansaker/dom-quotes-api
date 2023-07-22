@@ -63,7 +63,7 @@ def admin_login():
     return {"invalid_auth": "Valid email address or password required"}, 401
 
 
-@quote_bp.route('/', methods=['POST'])
+@quote_bp.route('/new/', methods=['POST'])
 @jwt_required()
 def add_quote():
     """
