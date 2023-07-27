@@ -4,13 +4,31 @@ Perform the CRUD operations on the Quote model
 from random import randint
 from datetime import timedelta
 from flask import Blueprint, request
-from sqlalchemy import desc
+from sqlalchemy import desc, asc
 from flask_jwt_extended import jwt_required, create_access_token
 from models.user import User, AdminSchema, AdminLoginSchema
-from models.quote import Quote, QuoteSchema
+from models.quote import Quote, QuoteSchema, QuoteSearchSchema
 from init import db, bcrypt
 
 quote_bp = Blueprint('quote', __name__)
+
+@quote_bp.route('/all')
+def get_all_quotes():
+    """
+    Get all quotes from quotes table
+    """
+    stmt = db.select(Quote).order_by(asc(Quote.id))
+    quotes = db.session.scalars(stmt).all()
+    return QuoteSchema(many=True).dump(quotes)
+
+@quote_bp.route('/all/<int:quote_id>/')
+def get_a_quote(quote_id):
+    """
+    Get quote from quotes table
+    """
+    stmt = db.select(Quote).filter_by(id=quote_id)
+    quote = db.session.scalar(stmt)
+    return QuoteSchema().dump(quote)
 
 @quote_bp.route('/')
 def get_quote():
@@ -27,6 +45,22 @@ def get_quote():
     # get a random number to use as the index for the quotes list
     random_quote = quotes[randint(1, max_range)]
     return QuoteSchema().dump(random_quote)
+
+@quote_bp.route('/all/search/', methods=['POST'])
+def search_quote():
+    """
+    Search for a quote
+    """
+    # sanitise incoming data
+    search_query = QuoteSearchSchema().load(request.json)
+    split_search = search_query['search'].split()
+    # add % for SQL like expression
+    prep_search_like_stmt = '%'.join(split_search) + '%'
+    print(prep_search_like_stmt)
+    # query DB
+    stmt = db.select(Quote).where(Quote.quote.like(prep_search_like_stmt))
+    search_results = db.session.scalars(stmt).all()
+    return QuoteSchema(many=True).dump(search_results)
 
 #ADMIN ONLY OPERATIONS
 @quote_bp.route('/login', methods=['POST'])
@@ -94,7 +128,7 @@ def add_quote():
     }, 201
 
 
-@quote_bp.route('/<int:quote_id>', methods=['DELETE'])
+@quote_bp.route('/all/<int:quote_id>/', methods=['DELETE'])
 @jwt_required()
 def delete_quote(quote_id):
     """
@@ -115,7 +149,7 @@ def delete_quote(quote_id):
     return {"not_found": "quote not found"}, 404
 
 
-@quote_bp.route('/<int:quote_id>', methods=['PUT', 'PATCH'])
+@quote_bp.route('/all/<int:quote_id>/', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_quote(quote_id):
     """

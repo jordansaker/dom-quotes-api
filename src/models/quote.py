@@ -35,3 +35,16 @@ class QuoteSchema(ma.Schema):
         """
         fields = ('id', 'quote', 'movie_title')
         ordered = True
+
+class QuoteSearchSchema(ma.Schema):
+    """
+    Defines the schema for the Quote Search loading
+
+    class Meta:
+        fields = ('user', 'search')
+    """
+    class Meta:
+        """
+        Defining the fields in a Tuple
+        """
+        fields = ('user', 'search')
