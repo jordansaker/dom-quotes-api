@@ -55,11 +55,13 @@ def search_quote():
     search_query = QuoteSearchSchema().load(request.json)
     split_search = search_query['search'].split()
     # add % for SQL like expression
-    prep_search_like_stmt = '%' + '%'.join(split_search) + '%'
-    # query DB
-    stmt = db.select(Quote).where(Quote.quote.like(prep_search_like_stmt))
-    search_results = db.session.scalars(stmt).all()
-    return QuoteSchema(many=True).dump(search_results)
+    return_list = []
+    for search_term in split_search:
+        # for each search term query db using 'LIKE' and add the results to the return_list
+        stmt = db.select(Quote).where(Quote.quote.like(f"{'%' + search_term + '%'}"))
+        search_results = db.session.scalars(stmt).all()
+        return_list += search_results
+    return QuoteSchema(many=True).dump(return_list)
 
 #ADMIN ONLY OPERATIONS
 @quote_bp.route('/login', methods=['POST'])
