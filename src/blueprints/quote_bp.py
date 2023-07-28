@@ -55,8 +55,7 @@ def search_quote():
     search_query = QuoteSearchSchema().load(request.json)
     split_search = search_query['search'].split()
     # add % for SQL like expression
-    prep_search_like_stmt = '%'.join(split_search) + '%'
-    print(prep_search_like_stmt)
+    prep_search_like_stmt = '%' + '%'.join(split_search) + '%'
     # query DB
     stmt = db.select(Quote).where(Quote.quote.like(prep_search_like_stmt))
     search_results = db.session.scalars(stmt).all()
