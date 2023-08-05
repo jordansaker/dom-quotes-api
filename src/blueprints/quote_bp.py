@@ -4,7 +4,7 @@ Perform the CRUD operations on the Quote model
 from random import randint
 from datetime import timedelta
 from flask import Blueprint, request
-from sqlalchemy import desc, asc, and_
+from sqlalchemy import desc, asc
 from flask_jwt_extended import jwt_required, create_access_token
 from models.user import User, AdminSchema, AdminLoginSchema
 from models.quote import Quote, QuoteSchema, QuoteSearchSchema
