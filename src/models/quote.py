@@ -47,4 +47,4 @@ class QuoteSearchSchema(ma.Schema):
         """
         Defining the fields in a Tuple
         """
-        fields = ('user', 'search')
+        fields = ('', 'search')
