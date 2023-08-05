@@ -4,7 +4,7 @@ Perform the CRUD operations on the Quote model
 from random import randint
 from datetime import timedelta
 from flask import Blueprint, request
-from sqlalchemy import desc, asc
+from sqlalchemy import desc, asc, and_
 from flask_jwt_extended import jwt_required, create_access_token
 from models.user import User, AdminSchema, AdminLoginSchema
 from models.quote import Quote, QuoteSchema, QuoteSearchSchema
@@ -61,6 +61,10 @@ def search_quote():
         stmt = db.select(Quote).where(Quote.quote.like(f"{'%' + search_term + '%'}"))
         search_results = db.session.scalars(stmt).all()
         return_list += search_results
+        # check for capitalized words
+        stmt = db.select(Quote).where(Quote.quote.like(f"{'%' + search_term.capitalize() + '%'}"))
+        search_results_cap = db.session.scalars(stmt).all()
+        return_list += search_results_cap
     return QuoteSchema(many=True).dump(return_list)
 
 #ADMIN ONLY OPERATIONS
